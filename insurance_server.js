@@ -20,6 +20,7 @@ insuranceDb.connect(err => {
     else console.log('Connected to MySQL (Insurance DB)');
 });
 
+
 // Fetch insurance details by license plate
 app.get('/api/insurance/:plate', (req, res) => {
     const plate = req.params.plate;
@@ -28,11 +29,15 @@ app.get('/api/insurance/:plate', (req, res) => {
         'SELECT insurance_start, insurance_end FROM insurance WHERE license_plate = ?',
         [plate],
         (err, results) => {
-            if (err) return res.status(500).json({ error: "Database error" });
+            if (err) {
+                console.error("❌ Insurance DB Query Error:", err); // 👈 Add this
+                return res.status(500).json({ error: "Database error" });
+            }
             if (results.length === 0) return res.status(404).json({ message: "No insurance found" });
-            res.json(results[0]); // Return insurance data
+            res.json(results[0]);
         }
     );
+    
 });
 
 // Start Server
